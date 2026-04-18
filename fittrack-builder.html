@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FitTrack — Workout Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;--surface:#13131a;--surface2:#1c1c26;--surface3:#252530;
+  --border:#2a2a38;--border2:#353545;
+  --text:#f0f0f8;--text2:#9898b0;--text3:#5a5a72;
+  --green:#00ff88;--green2:#00cc6a;--green-dim:#003322;
+  --amber:#ffaa00;--amber-dim:#332200;
+  --red:#ff4455;--red-dim:#330011;
+  --blue:#4488ff;--blue-dim:#001133;
+  --purple:#aa44ff;
+  --font-head:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-mono:'DM Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:980px;margin:0 auto;padding:2rem 1.25rem}
+header{margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+h1{font-family:var(--font-head);font-size:32px;font-weight:800;letter-spacing:-1px;margin-bottom:6px}
+h1 span{color:var(--green)}
+.subtitle{color:var(--text2);font-size:13px}
+.tabs{display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:1.5rem}
+.tab{flex:1;padding:9px;text-align:center;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text2);transition:all 0.15s;font-family:var(--font-head);letter-spacing:0.3px}
+.tab.active{background:var(--surface3);color:var(--text);border:1px solid var(--border2)}
+.tab:hover:not(.active){background:var(--surface2);color:var(--text)}
+.panel{display:none}.panel.active{display:block}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+@media(max-width:600px){.row,.row3{grid-template-columns:1fr}}
+.field{margin-bottom:1rem}
+label{display:block;font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;font-family:var(--font-mono)}
+input,select,textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;font-family:var(--font-body);outline:none;transition:border 0.15s;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 2px rgba(0,255,136,0.07)}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a5a72'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px}
+select option{background:var(--surface2);color:var(--text)}
+textarea{resize:vertical;min-height:70px}
+.section-head{font-family:var(--font-head);font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:2.5px;margin:1.75rem 0 1rem;display:flex;align-items:center;gap:10px}
+.section-head::after{content:'';flex:1;height:1px;background:var(--border)}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.filter-btn{padding:5px 13px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:11px;cursor:pointer;transition:all 0.15s;font-family:var(--font-mono);letter-spacing:0.5px}
+.filter-btn.active{background:var(--surface3);color:var(--text);border-color:var(--border2)}
+.filter-btn:hover:not(.active){background:var(--surface2);color:var(--text)}
+.search-wrap{position:relative;margin-bottom:1rem}
+.search-wrap input{padding-left:36px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none}
+.ex-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:8px;margin-bottom:1rem}
+.ex-card{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:11px 13px;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden}
+.ex-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:transparent;transition:background 0.15s}
+.ex-card:hover{border-color:var(--border2);background:var(--surface2)}
+.ex-card:hover::before{background:var(--border2)}
+.ex-card.selected{border-color:var(--green);background:var(--green-dim)}
+.ex-card.selected::before{background:var(--green)}
+.ex-card-name{font-weight:500;font-size:13px;margin-bottom:5px;padding-right:20px}
+.ex-card-meta{font-size:11px;color:var(--text3);display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.check-badge{position:absolute;top:9px;right:9px;width:18px;height:18px;border-radius:50%;background:var(--green);display:none;align-items:center;justify-content:center;font-size:10px;color:#000;font-weight:700}
+.ex-card.selected .check-badge{display:flex}
+.pill{display:inline-block;font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500;font-family:var(--font-mono)}
+.pill-comp{background:#0f2a1f;color:#44dd88;border:1px solid #1a4030}
+.pill-iso{background:#0f1a2a;color:#6699ff;border:1px solid #1a2a40}
+.pill-iso2{background:#1f0f2a;color:#bb77ff;border:1px solid #2a1a40}
+.pill-card{background:#1a1a0f;color:#ddcc44;border:1px solid #2a280f}
+.pill-diff-b{background:#0f2a1f;color:#55ee88}
+.pill-diff-i{background:#2a1f00;color:#ffcc44}
+.pill-diff-a{background:#2a0f10;color:#ff6677}
+.selected-list{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:1rem;min-height:70px}
+.sel-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.sel-item:last-child{border-bottom:none}
+.sel-item-name{flex:1;font-size:13px;font-weight:500;min-width:0}
+.sel-item-name span{display:block;font-size:10px;color:var(--text3);font-family:var(--font-mono);text-transform:uppercase;margin-top:2px}
+.sel-item-controls{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.num-lbl{font-size:10px;color:var(--text3);font-family:var(--font-mono)}
+.num-input{width:54px;text-align:center;padding:6px 4px;font-size:12px;font-family:var(--font-mono)}
+.sel-remove{background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;padding:0 2px;line-height:1;transition:color 0.1s}
+.sel-remove:hover{color:var(--red)}
+.analyze-btn{width:100%;padding:15px;background:var(--green);color:#000;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--font-head);letter-spacing:1px;margin-top:1rem;transition:all 0.15s;text-transform:uppercase}
+.analyze-btn:hover{background:var(--green2);transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,255,136,0.2)}
+.analyze-btn:active{transform:translateY(0)}
+.grade-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.75rem;margin-top:0.5rem}
+.grade-hero{display:flex;align-items:center;gap:1.75rem;margin-bottom:1.75rem;padding-bottom:1.75rem;border-bottom:1px solid var(--border)}
+.grade-letter{font-family:var(--font-head);font-size:80px;font-weight:800;line-height:1;min-width:90px;text-align:center}
+.grade-info h2{font-family:var(--font-head);font-size:22px;font-weight:700;margin-bottom:6px}
+.grade-info p{color:var(--text2);font-size:13px;line-height:1.6}
+.overall-score-wrap{margin-top:10px;display:flex;align-items:center;gap:12px}
+.overall-score-num{font-family:var(--font-mono);font-size:28px;font-weight:500}
+.overall-bar-wrap{flex:1;height:10px;background:var(--surface3);border-radius:5px;overflow:hidden}
+.overall-bar-fill{height:100%;border-radius:5px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1)}
+.score-bars{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:1.75rem}
+.score-bar-item{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:13px}
+.score-bar-label{font-size:10px;font-family:var(--font-mono);color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.score-bar-val{font-size:22px;font-weight:700;font-family:var(--font-head);margin-bottom:7px}
+.bar-track{height:5px;background:var(--surface3);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width 0.7s cubic-bezier(0.4,0,0.2,1)}
+.indicators{margin-bottom:1.75rem}
+.indicator{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.indicator:last-child{border-bottom:none}
+.ind-icon{font-size:18px;min-width:24px;margin-top:1px}
+.ind-title{font-size:13px;font-weight:600;margin-bottom:3px;font-family:var(--font-head)}
+.ind-desc{font-size:12px;color:var(--text2);line-height:1.6}
+.muscle-map{margin-bottom:1.75rem}
+.muscle-row{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.muscle-name{font-size:11px;font-family:var(--font-mono);color:var(--text2);width:130px;flex-shrink:0;text-transform:uppercase;letter-spacing:0.5px}
+.muscle-bar-wrap{flex:1;height:8px;background:var(--surface3);border-radius:4px;overflow:hidden}
+.muscle-bar-fill{height:100%;border-radius:4px;transition:width 0.7s cubic-bezier(0.4,0,0.2,1)}
+.muscle-count{font-size:11px;color:var(--text3);min-width:35px;text-align:right;font-family:var(--font-mono)}
+.tips-list{list-style:none}
+.tips-list li{padding:9px 0 9px 22px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2);position:relative;line-height:1.6}
+.tips-list li::before{content:'→';position:absolute;left:0;color:var(--green);font-size:11px;top:11px;font-family:var(--font-mono)}
+.tips-list li:last-child{border-bottom:none}
+.empty-sel{color:var(--text3);font-size:13px;text-align:center;padding:1.25rem;font-style:italic}
+.header-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:1rem}
+.workout-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem}
+@media(max-width:600px){.workout-meta{grid-template-columns:1fr 1fr}}
+.sel-count-badge{background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;font-family:var(--font-mono);color:var(--text2)}
+.lib-card{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:12px 14px}
+.lib-card-name{font-weight:600;font-size:13px;margin-bottom:5px;font-family:var(--font-head)}
+.lib-card-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:7px}
+.lib-card-stats{font-size:11px;color:var(--text3);font-family:var(--font-mono);margin-bottom:6px}
+.lib-card-note{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:7px}
+.lib-card-muscles{display:flex;gap:4px;flex-wrap:wrap}
+.muscle-tag{font-size:10px;padding:2px 6px;border-radius:4px;background:var(--surface3);color:var(--text3);border:1px solid var(--border)}
+.no-results{text-align:center;padding:2.5rem;color:var(--text3);font-size:13px}
+footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border);text-align:center;font-size:12px;color:var(--text3);font-family:var(--font-mono)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Fit<span>Track</span> Builder</h1>
+    <p class="subtitle">Build your workout · Get a graded analysis · Optimize for your goal</p>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('build',0)">Build Workout</div>
+    <div class="tab" onclick="switchTab('library',1)">Exercise Library</div>
+    <div class="tab" onclick="switchTab('grade',2)">Analysis</div>
+  </div>
+
+  <!-- BUILD TAB -->
+  <div id="tab-build" class="panel active">
+    <div class="row">
+      <div class="field">
+        <label>Workout Name</label>
+        <input id="wname" placeholder="e.g. Push Day A" value="Push Day A"/>
+      </div>
+      <div class="field">
+        <label>Primary Goal</label>
+        <select id="wgoal">
+          <option value="hypertrophy">Hypertrophy (Muscle Growth)</option>
+          <option value="strength">Strength</option>
+          <option value="endurance">Muscular Endurance</option>
+          <option value="power">Power & Explosiveness</option>
+          <option value="general">General Fitness</option>
+          <option value="fat_loss">Fat Loss / Conditioning</option>
+        </select>
+      </div>
+    </div>
+    <div class="workout-meta">
+      <div class="field">
+        <label>Experience Level</label>
+        <select id="wlevel">
+          <option value="beginner">Beginner</option>
+          <option value="intermediate" selected>Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Session Length</label>
+        <select id="wduration">
+          <option value="30">30 min</option>
+          <option value="45">45 min</option>
+          <option value="60" selected>60 min</option>
+          <option value="75">75 min</option>
+          <option value="90">90+ min</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Frequency / week</label>
+        <select id="wfreq">
+          <option value="2">2x / week</option>
+          <option value="3" selected>3x / week</option>
+          <option value="4">4x / week</option>
+          <option value="5">5x / week</option>
+          <option value="6">6x / week</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-head">Exercise Selection</div>
+
+    <div class="filter-row" id="build-filters">
+      <button class="filter-btn active" onclick="setBuildFilter('All',this)">All</button>
+      <button class="filter-btn" onclick="setBuildFilter('Chest',this)">Chest</button>
+      <button class="filter-btn" onclick="setBuildFilter('Back',this)">Back</button>
+      <button class="filter-btn" onclick="setBuildFilter('Shoulders',this)">Shoulders</button>
+      <button class="filter-btn" onclick="setBuildFilter('Legs',this)">Legs</button>
+      <button class="filter-btn" onclick="setBuildFilter('Arms',this)">Arms</button>
+      <button class="filter-btn" onclick="setBuildFilter('Core',this)">Core</button>
+      <button class="filter-btn" onclick="setBuildFilter('Cardio',this)">Cardio</button>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" placeholder="Search exercises..." id="ex-search" oninput="renderBuildExercises()"/>
+    </div>
+    <div class="ex-grid" id="build-ex-grid"></div>
+
+    <div class="section-head">Selected Exercises <span class="sel-count-badge" id="sel-count">0 selected</span></div>
+    <div class="selected-list" id="selected-list">
+      <div class="empty-sel">Click exercises above to add them to your workout</div>
+    </div>
+    <button class="analyze-btn" onclick="analyzeWorkout()">⚡ Analyze &amp; Grade Workout</button>
+  </div>
+
+  <!-- LIBRARY TAB -->
+  <div id="tab-library" class="panel">
+    <div class="header-row">
+      <div class="filter-row" id="lib-filters" style="margin-bottom:0">
+        <button class="filter-btn active" onclick="setLibFilter('All',this)">All</button>
+        <button class="filter-btn" onclick="setLibFilter('Chest',this)">Chest</button>
+        <button class="filter-btn" onclick="setLibFilter('Back',this)">Back</button>
+        <button class="filter-btn" onclick="setLibFilter('Shoulders',this)">Shoulders</button>
+        <button class="filter-btn" onclick="setLibFilter('Legs',this)">Legs</button>
+        <button class="filter-btn" onclick="setLibFilter('Arms',this)">Arms</button>
+        <button class="filter-btn" onclick="setLibFilter('Core',this)">Core</button>
+        <button class="filter-btn" onclick="setLibFilter('Cardio',this)">Cardio</button>
+      </div>
+    </div>
+    <div class="search-wrap" style="margin-top:1rem">
+      <span class="search-icon">⌕</span>
+      <input type="text" placeholder="Search exercises..." id="lib-search" oninput="renderLibrary()"/>
+    </div>
+    <div class="ex-grid" id="lib-grid"></div>
+  </div>
+
+  <!-- GRADE TAB -->
+  <div id="tab-grade" class="panel">
+    <div id="grade-empty" style="text-align:center;padding:4rem 1rem;color:var(--text3)">
+      <div style="font-size:40px;margin-bottom:1rem">📊</div>
+      <div style="font-family:var(--font-head);font-size:16px;color:var(--text2);margin-bottom:6px">No analysis yet</div>
+      <div style="font-size:13px">Build a workout in the first tab, then click "Analyze &amp; Grade Workout"</div>
+    </div>
+    <div id="grade-content" style="display:none"></div>
+  </div>
+
+  <footer>FitTrack Builder · Built for CS Assignment 3b · Pittsburgh, PA</footer>
+</div>
+
+<script>
+const DB = [
+  {id:1,name:"Barbell Bench Press",group:"Chest",type:"Compound",diff:"Intermediate",muscles:["Chest","Triceps","Front Delts"],sets:[3,5],reps:[4,8],rir:2,mev:2,mrv:8,compound:true,note:"King of chest exercises. Keep shoulder blades retracted, feet flat. Full ROM critical for development."},
+  {id:2,name:"Incline Dumbbell Press",group:"Chest",type:"Compound",diff:"Beginner",muscles:["Upper Chest","Triceps","Front Delts"],sets:[3,4],reps:[8,12],rir:2,mev:2,mrv:6,compound:true,note:"Best movement for upper chest. Set bench to 30-45 degrees."},
+  {id:3,name:"Cable Fly",group:"Chest",type:"Isolation",diff:"Beginner",muscles:["Chest"],sets:[3,4],reps:[12,15],rir:1,mev:1,mrv:5,compound:false,note:"Peak contraction focus. Great finisher after pressing movements."},
+  {id:4,name:"Dips (Chest Focus)",group:"Chest",type:"Compound",diff:"Intermediate",muscles:["Chest","Triceps"],sets:[3,4],reps:[8,12],rir:2,mev:2,mrv:6,compound:true,note:"Lean forward to shift emphasis to chest over triceps."},
+  {id:5,name:"Push-Up",group:"Chest",type:"Compound",diff:"Beginner",muscles:["Chest","Triceps","Core"],sets:[3,4],reps:[10,20],rir:2,mev:2,mrv:8,compound:true,note:"Elevate feet for upper chest. Add a weight plate for load."},
+  {id:6,name:"Pec Deck Machine",group:"Chest",type:"Isolation",diff:"Beginner",muscles:["Chest"],sets:[3,4],reps:[12,15],rir:1,mev:1,mrv:5,compound:false,note:"Excellent for hypertrophy stretch at end ROM. Safe on shoulders."},
+  {id:7,name:"Machine Chest Press",group:"Chest",type:"Compound",diff:"Beginner",muscles:["Chest","Triceps"],sets:[3,4],reps:[10,14],rir:2,mev:2,mrv:7,compound:true,note:"Safer than barbell. Good for beginners learning pressing pattern."},
+  {id:8,name:"Low Cable Fly",group:"Chest",type:"Isolation",diff:"Beginner",muscles:["Upper Chest"],sets:[3,4],reps:[12,15],rir:1,mev:1,mrv:5,compound:false,note:"Targets upper chest from a different angle than incline press."},
+  {id:9,name:"Pull-Up / Chin-Up",group:"Back",type:"Compound",diff:"Intermediate",muscles:["Lats","Biceps","Rear Delts"],sets:[3,5],reps:[5,10],rir:2,mev:2,mrv:8,compound:true,note:"Chinups (supinated) emphasize biceps more. Full dead hang each rep."},
+  {id:10,name:"Barbell Row",group:"Back",type:"Compound",diff:"Intermediate",muscles:["Lats","Traps","Biceps","Rear Delts"],sets:[3,4],reps:[6,10],rir:2,mev:2,mrv:7,compound:true,note:"Overhand grip hits upper back more. Pull to lower chest, not stomach."},
+  {id:11,name:"Cable Row",group:"Back",type:"Compound",diff:"Beginner",muscles:["Lats","Traps","Rear Delts"],sets:[3,4],reps:[10,14],rir:2,mev:2,mrv:7,compound:true,note:"Constant tension through full ROM. Use various handle attachments."},
+  {id:12,name:"Lat Pulldown",group:"Back",type:"Compound",diff:"Beginner",muscles:["Lats","Biceps"],sets:[3,4],reps:[10,12],rir:2,mev:2,mrv:7,compound:true,note:"Wide pronated grip for lat width. Full stretch at top."},
+  {id:13,name:"Deadlift",group:"Back",type:"Compound",diff:"Advanced",muscles:["Back","Glutes","Hamstrings","Traps"],sets:[2,4],reps:[3,6],rir:3,mev:1,mrv:4,compound:true,note:"Full body king. Very high CNS demand—limit to 1-2x/week."},
+  {id:14,name:"Face Pull",group:"Back",type:"Isolation",diff:"Beginner",muscles:["Rear Delts","Rotator Cuff"],sets:[3,4],reps:[15,20],rir:1,mev:2,mrv:8,compound:false,note:"Essential for shoulder health. Pull to forehead, elbows high."},
+  {id:15,name:"Dumbbell Row",group:"Back",type:"Compound",diff:"Beginner",muscles:["Lats","Biceps"],sets:[3,4],reps:[10,12],rir:2,mev:2,mrv:7,compound:true,note:"Unilateral. Let shoulder blade move for full lat ROM."},
+  {id:16,name:"Trap Bar Deadlift",group:"Back",type:"Compound",diff:"Intermediate",muscles:["Back","Glutes","Quads","Hamstrings"],sets:[3,4],reps:[5,8],rir:2,mev:2,mrv:5,compound:true,note:"More quad-dominant than conventional. Safer spinal position for most."},
+  {id:17,name:"T-Bar Row",group:"Back",type:"Compound",diff:"Intermediate",muscles:["Lats","Traps","Rear Delts"],sets:[3,4],reps:[8,12],rir:2,mev:2,mrv:7,compound:true,note:"Heavy mid-back builder. Use a close-grip handle."},
+  {id:18,name:"Shrugs",group:"Back",type:"Isolation",diff:"Beginner",muscles:["Upper Traps"],sets:[3,4],reps:[12,15],rir:1,mev:2,mrv:8,compound:false,note:"Pause at the top for 1 second. Don't roll the shoulders."},
+  {id:19,name:"Seated Row Machine",group:"Back",type:"Compound",diff:"Beginner",muscles:["Lats","Traps"],sets:[3,4],reps:[10,14],rir:2,mev:2,mrv:7,compound:true,note:"Excellent for beginners. Multiple grip options available."},
+  {id:20,name:"Overhead Press",group:"Shoulders",type:"Compound",diff:"Intermediate",muscles:["Front Delts","Triceps","Traps"],sets:[3,4],reps:[6,10],rir:2,mev:2,mrv:6,compound:true,note:"Best overall shoulder mass builder. Brace core throughout."},
+  {id:21,name:"Lateral Raise",group:"Shoulders",type:"Isolation",diff:"Beginner",muscles:["Side Delts"],sets:[3,5],reps:[12,20],rir:1,mev:3,mrv:10,compound:false,note:"Side delts need high volume. Slight forward lean emphasizes lateral head."},
+  {id:22,name:"Rear Delt Fly",group:"Shoulders",type:"Isolation",diff:"Beginner",muscles:["Rear Delts"],sets:[3,4],reps:[12,20],rir:1,mev:2,mrv:8,compound:false,note:"Crucial for shoulder balance. Most people underdevelop rear delts."},
+  {id:23,name:"Arnold Press",group:"Shoulders",type:"Compound",diff:"Intermediate",muscles:["Front Delts","Side Delts","Triceps"],sets:[3,4],reps:[8,12],rir:2,mev:2,mrv:6,compound:true,note:"Hits all three delt heads through rotation. Greater ROM than standard press."},
+  {id:24,name:"Cable Lateral Raise",group:"Shoulders",type:"Isolation",diff:"Beginner",muscles:["Side Delts"],sets:[3,4],reps:[15,20],rir:1,mev:2,mrv:10,compound:false,note:"Constant tension vs dumbbell. Cross-body version for better stretch."},
+  {id:25,name:"Upright Row",group:"Shoulders",type:"Compound",diff:"Intermediate",muscles:["Upper Traps","Side Delts"],sets:[3,4],reps:[10,12],rir:2,mev:2,mrv:6,compound:true,note:"Use cable for joint-friendly version. Avoid if you have impingement."},
+  {id:26,name:"Barbell Squat",group:"Legs",type:"Compound",diff:"Advanced",muscles:["Quads","Glutes","Hamstrings","Core"],sets:[3,5],reps:[4,8],rir:2,mev:2,mrv:6,compound:true,note:"King of lower body. Depth below parallel for full glute and ham activation."},
+  {id:27,name:"Romanian Deadlift",group:"Legs",type:"Compound",diff:"Intermediate",muscles:["Hamstrings","Glutes","Lower Back"],sets:[3,4],reps:[8,12],rir:2,mev:2,mrv:6,compound:true,note:"Best hamstring exercise. Feel the stretch — don't round the back."},
+  {id:28,name:"Leg Press",group:"Legs",type:"Compound",diff:"Beginner",muscles:["Quads","Glutes"],sets:[3,4],reps:[10,15],rir:2,mev:2,mrv:7,compound:true,note:"Allows heavy loading safely. High foot placement for more glute involvement."},
+  {id:29,name:"Leg Curl",group:"Legs",type:"Isolation",diff:"Beginner",muscles:["Hamstrings"],sets:[3,4],reps:[10,15],rir:1,mev:2,mrv:7,compound:false,note:"Best hamstring isolation. Seated version provides better stretch."},
+  {id:30,name:"Leg Extension",group:"Legs",type:"Isolation",diff:"Beginner",muscles:["Quads"],sets:[3,4],reps:[12,15],rir:1,mev:2,mrv:7,compound:false,note:"Terminal knee extension. Excellent for VMO and quad isolation."},
+  {id:31,name:"Bulgarian Split Squat",group:"Legs",type:"Compound",diff:"Advanced",muscles:["Quads","Glutes","Hamstrings"],sets:[3,4],reps:[8,12],rir:2,mev:2,mrv:6,compound:true,note:"Best unilateral leg exercise. Rear foot elevation adds hip flexor stretch."},
+  {id:32,name:"Hip Thrust",group:"Legs",type:"Compound",diff:"Intermediate",muscles:["Glutes","Hamstrings"],sets:[3,4],reps:[10,15],rir:1,mev:2,mrv:7,compound:true,note:"Peak glute activation. Squeeze at the top and hold 1 second."},
+  {id:33,name:"Calf Raise",group:"Legs",type:"Isolation",diff:"Beginner",muscles:["Calves"],sets:[3,5],reps:[12,20],rir:1,mev:3,mrv:10,compound:false,note:"Calves need high volume and frequency. Full stretch at bottom."},
+  {id:34,name:"Hack Squat",group:"Legs",type:"Compound",diff:"Intermediate",muscles:["Quads","Glutes"],sets:[3,4],reps:[8,12],rir:2,mev:2,mrv:6,compound:true,note:"Machine-based. Safer for heavy quad work. Vary foot placement."},
+  {id:35,name:"Walking Lunge",group:"Legs",type:"Compound",diff:"Intermediate",muscles:["Quads","Glutes","Hamstrings"],sets:[3,4],reps:[10,14],rir:2,mev:2,mrv:6,compound:true,note:"Count per leg. Functional strength and coordination."},
+  {id:36,name:"Hip Thrust (Banded)",group:"Legs",type:"Compound",diff:"Beginner",muscles:["Glutes","Abductors"],sets:[3,4],reps:[15,20],rir:1,mev:2,mrv:8,compound:false,note:"Band adds abductor activation. Good for mind-muscle connection."},
+  {id:37,name:"Nordic Curl",group:"Legs",type:"Compound",diff:"Advanced",muscles:["Hamstrings"],sets:[3,4],reps:[5,8],rir:3,mev:1,mrv:4,compound:true,note:"Eccentric hamstring king. Very demanding — build up gradually."},
+  {id:38,name:"Barbell Curl",group:"Arms",type:"Isolation",diff:"Beginner",muscles:["Biceps"],sets:[3,4],reps:[8,12],rir:1,mev:2,mrv:8,compound:false,note:"Standard bicep mass builder. Avoid swinging — control the eccentric."},
+  {id:39,name:"Hammer Curl",group:"Arms",type:"Isolation",diff:"Beginner",muscles:["Brachialis","Biceps"],sets:[3,4],reps:[10,12],rir:1,mev:2,mrv:7,compound:false,note:"Builds overall arm thickness through brachialis."},
+  {id:40,name:"Incline Dumbbell Curl",group:"Arms",type:"Isolation",diff:"Intermediate",muscles:["Biceps Long Head"],sets:[3,4],reps:[10,12],rir:1,mev:2,mrv:7,compound:false,note:"Long head stretch maximized. Great for bicep peak."},
+  {id:41,name:"Preacher Curl",group:"Arms",type:"Isolation",diff:"Beginner",muscles:["Biceps Short Head"],sets:[3,4],reps:[10,12],rir:1,mev:2,mrv:7,compound:false,note:"Short head peak. EZ-bar version is more wrist-friendly."},
+  {id:42,name:"Tricep Pushdown",group:"Arms",type:"Isolation",diff:"Beginner",muscles:["Triceps Lateral Head"],sets:[3,4],reps:[12,15],rir:1,mev:2,mrv:8,compound:false,note:"Good pump movement. Use rope for more lateral head activation."},
+  {id:43,name:"Skull Crusher",group:"Arms",type:"Isolation",diff:"Intermediate",muscles:["Triceps Long Head"],sets:[3,4],reps:[8,12],rir:2,mev:2,mrv:7,compound:false,note:"Best tricep long head exercise. Let the bar come behind the head."},
+  {id:44,name:"Overhead Tricep Extension",group:"Arms",type:"Isolation",diff:"Beginner",muscles:["Triceps Long Head"],sets:[3,4],reps:[10,15],rir:1,mev:2,mrv:7,compound:false,note:"Best long head stretch position. Cable version preferred."},
+  {id:45,name:"Close Grip Bench Press",group:"Arms",type:"Compound",diff:"Intermediate",muscles:["Triceps","Chest"],sets:[3,4],reps:[6,10],rir:2,mev:2,mrv:6,compound:true,note:"Heavy tricep compound. Hands shoulder-width, not too narrow."},
+  {id:46,name:"Concentration Curl",group:"Arms",type:"Isolation",diff:"Beginner",muscles:["Biceps Peak"],sets:[3,4],reps:[10,12],rir:1,mev:2,mrv:7,compound:false,note:"Excellent for bicep peak. Full supination at the top."},
+  {id:47,name:"Plank",group:"Core",type:"Isometric",diff:"Beginner",muscles:["Core","Lower Back"],sets:[3,4],reps:[30,60],rir:0,mev:2,mrv:8,compound:false,note:"Reps = seconds. Squeeze glutes, brace abs, don't let hips sag."},
+  {id:48,name:"Cable Crunch",group:"Core",type:"Isolation",diff:"Beginner",muscles:["Abs"],sets:[3,4],reps:[12,15],rir:1,mev:2,mrv:8,compound:false,note:"Best loaded ab exercise. Pull with abs, not arms."},
+  {id:49,name:"Hanging Leg Raise",group:"Core",type:"Isolation",diff:"Intermediate",muscles:["Abs","Hip Flexors"],sets:[3,4],reps:[10,15],rir:1,mev:2,mrv:7,compound:false,note:"Bend knees to reduce hip flexor involvement if needed."},
+  {id:50,name:"Ab Wheel Rollout",group:"Core",type:"Compound",diff:"Advanced",muscles:["Abs","Lats","Shoulders"],sets:[3,4],reps:[8,12],rir:1,mev:2,mrv:6,compound:true,note:"Full core tension from anti-extension pattern. Build up from knees."},
+  {id:51,name:"Dead Bug",group:"Core",type:"Isometric",diff:"Beginner",muscles:["Core","Hip Flexors"],sets:[3,4],reps:[8,12],rir:1,mev:2,mrv:8,compound:false,note:"Anti-extension pattern. Spine safe. Slow and controlled."},
+  {id:52,name:"Pallof Press",group:"Core",type:"Isometric",diff:"Intermediate",muscles:["Obliques","Core"],sets:[3,4],reps:[10,12],rir:1,mev:2,mrv:7,compound:false,note:"Anti-rotation. Highly functional. Resist the cable throughout."},
+  {id:53,name:"Bicycle Crunch",group:"Core",type:"Isolation",diff:"Beginner",muscles:["Obliques","Abs"],sets:[3,4],reps:[15,20],rir:1,mev:2,mrv:8,compound:false,note:"Slow and controlled beats fast and sloppy. Full rotation each rep."},
+  {id:54,name:"Running (Moderate)",group:"Cardio",type:"Cardio",diff:"Beginner",muscles:["Cardiovascular","Legs"],sets:[1,1],reps:[20,40],rir:0,mev:1,mrv:5,compound:false,note:"Reps = minutes. Zone 2 cardio. Builds aerobic base without interfering with recovery."},
+  {id:55,name:"HIIT Sprints",group:"Cardio",type:"Cardio",diff:"Intermediate",muscles:["Cardiovascular","Legs"],sets:[6,10],reps:[20,30],rir:0,mev:1,mrv:4,compound:false,note:"Reps = seconds work. 1:2 work to rest ratio. All-out effort each interval."},
+  {id:56,name:"Jump Rope",group:"Cardio",type:"Cardio",diff:"Beginner",muscles:["Cardiovascular","Calves","Coordination"],sets:[3,5],reps:[60,120],rir:0,mev:1,mrv:5,compound:false,note:"Reps = seconds. Excellent conditioning and coordination work."},
+  {id:57,name:"Box Jump",group:"Cardio",type:"Power",diff:"Intermediate",muscles:["Quads","Glutes","Calves"],sets:[3,5],reps:[5,8],rir:3,mev:2,mrv:5,compound:true,note:"Always train power when fresh. Step down — never jump down."},
+  {id:58,name:"Rowing Machine",group:"Cardio",type:"Cardio",diff:"Beginner",muscles:["Cardiovascular","Back","Arms"],sets:[1,3],reps:[5,20],rir:0,mev:1,mrv:4,compound:false,note:"Reps = minutes. Full body aerobic work. Legs should drive 60% of power."},
+  {id:59,name:"Battle Ropes",group:"Cardio",type:"Cardio",diff:"Intermediate",muscles:["Cardiovascular","Shoulders","Arms","Core"],sets:[4,6],reps:[20,40],rir:0,mev:1,mrv:4,compound:false,note:"Reps = seconds work. Various patterns for different emphasis."},
+  {id:60,name:"Assault Bike",group:"Cardio",type:"Cardio",diff:"Advanced",muscles:["Cardiovascular","Full Body"],sets:[4,8],reps:[20,30],rir:0,mev:1,mrv:4,compound:false,note:"Reps = seconds work. Full body conditioning. Extremely demanding."},
+];
+
+let selected = {};
+let buildFilter = 'All';
+let libFilter = 'All';
+
+function diffPill(d){
+  if(d==='Beginner') return '<span class="pill pill-diff-b">Beginner</span>';
+  if(d==='Intermediate') return '<span class="pill pill-diff-i">Intermediate</span>';
+  return '<span class="pill pill-diff-a">Advanced</span>';
+}
+function typePill(t){
+  if(t==='Compound') return '<span class="pill pill-comp">Compound</span>';
+  if(t==='Isolation') return '<span class="pill pill-iso">Isolation</span>';
+  if(t==='Isometric') return '<span class="pill pill-iso2">Isometric</span>';
+  if(t==='Cardio'||t==='Power') return '<span class="pill pill-card">'+t+'</span>';
+  return '<span class="pill pill-iso">'+t+'</span>';
+}
+function barColor(s){return s>=85?'var(--green)':s>=65?'var(--amber)':'var(--red)';}
+function gradeFromScore(s){
+  if(s>=93) return{letter:'A+',color:'var(--green)',label:'Optimal'};
+  if(s>=87) return{letter:'A',color:'var(--green)',label:'Excellent'};
+  if(s>=80) return{letter:'A-',color:'#66ff88',label:'Very Good'};
+  if(s>=75) return{letter:'B+',color:'#88ff44',label:'Good'};
+  if(s>=68) return{letter:'B',color:'var(--amber)',label:'Solid'};
+  if(s>=60) return{letter:'B-',color:'var(--amber)',label:'Decent'};
+  if(s>=50) return{letter:'C+',color:'#ffcc44',label:'Needs Work'};
+  if(s>=40) return{letter:'C',color:'var(--red)',label:'Poor Balance'};
+  return{letter:'D',color:'var(--red)',label:'Redesign Needed'};
+}
+
+function getFiltered(filter, search){
+  return DB.filter(e=>{
+    const mg = filter==='All'||e.group===filter;
+    const q = (search||'').toLowerCase();
+    const s = !q||e.name.toLowerCase().includes(q)||e.group.toLowerCase().includes(q)||e.muscles.some(m=>m.toLowerCase().includes(q));
+    return mg&&s;
+  });
+}
+
+function renderBuildExercises(){
+  const search = document.getElementById('ex-search').value;
+  const list = getFiltered(buildFilter, search);
+  const grid = document.getElementById('build-ex-grid');
+  if(!list.length){grid.innerHTML='<div class="no-results">No exercises found</div>';return;}
+  grid.innerHTML = list.map(e=>`
+    <div class="ex-card${selected[e.id]?' selected':''}" onclick="toggleSelect(${e.id})" id="bc-${e.id}">
+      <div class="check-badge">✓</div>
+      <div class="ex-card-name">${e.name}</div>
+      <div class="ex-card-meta">
+        ${typePill(e.type)} ${diffPill(e.diff)}
+        <span>${e.muscles.slice(0,2).join(' · ')}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderLibrary(){
+  const search = document.getElementById('lib-search').value;
+  const list = getFiltered(libFilter, search);
+  const grid = document.getElementById('lib-grid');
+  if(!list.length){grid.innerHTML='<div class="no-results">No exercises found</div>';return;}
+  grid.innerHTML = list.map(e=>`
+    <div class="lib-card">
+      <div class="lib-card-name">${e.name}</div>
+      <div class="lib-card-pills">${typePill(e.type)} ${diffPill(e.diff)} <span style="font-size:11px;color:var(--text3);font-family:var(--font-mono)">${e.group}</span></div>
+      <div class="lib-card-stats">${e.sets[0]}-${e.sets[1]} sets · ${e.reps[0]}-${e.reps[1]} reps · RIR ${e.rir} · MEV ${e.mev} · MRV ${e.mrv}</div>
+      <div class="lib-card-note">${e.note}</div>
+      <div class="lib-card-muscles">${e.muscles.map(m=>`<span class="muscle-tag">${m}</span>`).join('')}</div>
+    </div>
+  `).join('');
+}
+
+function toggleSelect(id){
+  if(selected[id]){delete selected[id];}
+  else{const e=DB.find(x=>x.id===id);selected[id]={...e,sets:e.sets[0],reps:e.reps[0]};}
+  renderBuildExercises();
+  renderSelectedList();
+}
+
+function renderSelectedList(){
+  const keys = Object.keys(selected);
+  document.getElementById('sel-count').textContent = keys.length+' selected';
+  if(!keys.length){document.getElementById('selected-list').innerHTML='<div class="empty-sel">Click exercises above to add them to your workout</div>';return;}
+  document.getElementById('selected-list').innerHTML = keys.map(id=>{
+    const e=selected[id];
+    return `<div class="sel-item">
+      <div class="sel-item-name">${e.name}<span>${e.group} · ${e.type}</span></div>
+      <div class="sel-item-controls">
+        <span class="num-lbl">Sets</span>
+        <input class="num-input" type="number" min="1" max="10" value="${e.sets}" onchange="updateSel(${id},'sets',this.value)"/>
+        <span class="num-lbl">Reps</span>
+        <input class="num-input" type="number" min="1" max="60" value="${e.reps}" onchange="updateSel(${id},'reps',this.value)"/>
+        <button class="sel-remove" onclick="removeSelected(${id})">×</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateSel(id,field,val){if(selected[id])selected[id][field]=parseInt(val)||1;}
+function removeSelected(id){delete selected[id];renderBuildExercises();renderSelectedList();}
+function setBuildFilter(f,btn){buildFilter=f;document.querySelectorAll('#build-filters .filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderBuildExercises();}
+function setLibFilter(f,btn){libFilter=f;document.querySelectorAll('#lib-filters .filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderLibrary();}
+
+function switchTab(t,idx){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab')[idx].classList.add('active');
+  document.getElementById('tab-'+t).classList.add('active');
+}
+
+function analyzeWorkout(){
+  const exList = Object.values(selected);
+  if(!exList.length){alert('Add at least 1 exercise first.');return;}
+
+  const goal = document.getElementById('wgoal').value;
+  const level = document.getElementById('wlevel').value;
+  const duration = parseInt(document.getElementById('wduration').value);
+  const freq = parseInt(document.getElementById('wfreq').value);
+
+  const totalSets = exList.reduce((a,e)=>a+e.sets,0);
+  const totalReps = exList.reduce((a,e)=>a+e.reps,0);
+  const totalVolume = exList.reduce((a,e)=>a+e.sets*e.reps,0);
+  const compounds = exList.filter(e=>e.compound).length;
+  const isolations = exList.filter(e=>!e.compound).length;
+  const groups = [...new Set(exList.map(e=>e.group))];
+  const exCount = exList.length;
+
+  const goalSets = {hypertrophy:[12,20],strength:[10,16],endurance:[15,25],power:[8,14],general:[10,18],fat_loss:[14,22]};
+  const goalReps = {hypertrophy:[8,12],strength:[3,6],endurance:[12,20],power:[3,6],general:[8,15],fat_loss:[12,20]};
+  const [minSets,maxSets] = goalSets[goal];
+  const [minReps,maxReps] = goalReps[goal];
+  const avgReps = totalReps/exCount;
+  const goalRepsMid = (minReps+maxReps)/2;
+
+  let volumeScore = 100;
+  if(totalSets<minSets) volumeScore=Math.max(20,100-(minSets-totalSets)*8);
+  else if(totalSets>maxSets) volumeScore=Math.max(20,100-(totalSets-maxSets)*5);
+
+  let repScore = Math.max(20,100-Math.abs(avgReps-goalRepsMid)*6);
+
+  const idealEx = {30:[3,5],45:[4,6],60:[5,8],75:[6,9],90:[7,11]}[duration]||[5,8];
+  let exCountScore = 100;
+  if(exCount<idealEx[0]) exCountScore=Math.max(30,100-(idealEx[0]-exCount)*12);
+  else if(exCount>idealEx[1]) exCountScore=Math.max(40,100-(exCount-idealEx[1])*8);
+
+  const idealRatio = {hypertrophy:0.5,strength:0.75,endurance:0.4,power:0.8,general:0.55,fat_loss:0.45}[goal];
+  const actualRatio = compounds/exCount;
+  let balanceScore = Math.max(20,100-Math.abs(actualRatio-idealRatio)*120);
+
+  const majorGroups = ['Chest','Back','Shoulders','Legs','Arms','Core'];
+  const covered = groups.filter(g=>majorGroups.includes(g)).length;
+  let coverageScore = groups.length<=2?95:groups.length<=3?85:Math.min(100,60+covered*7);
+
+  const avgSetsPerEx = totalSets/exCount;
+  let effortScore = 100;
+  if(avgSetsPerEx<2.5) effortScore=65;
+  else if(avgSetsPerEx<3) effortScore=80;
+  else if(avgSetsPerEx>5) effortScore=70;
+
+  const groupSets = {};
+  exList.forEach(e=>{groupSets[e.group]=(groupSets[e.group]||0)+e.sets;});
+  let mevViolations = 0;
+  Object.entries(groupSets).forEach(([g,s])=>{
+    const mev = exList.filter(e=>e.group===g).reduce((a,e)=>a+e.mev,0);
+    if(s<mev) mevViolations++;
+  });
+  let mevScore = Math.max(30,100-mevViolations*20);
+
+  // Intensity score based on RIR compliance
+  const avgRIR = exList.reduce((a,e)=>a+e.rir,0)/exCount;
+  const idealRIR = {hypertrophy:1.5,strength:2.5,endurance:1,power:3,general:2,fat_loss:1}[goal];
+  let intensityScore = Math.max(30,100-Math.abs(avgRIR-idealRIR)*20);
+
+  // Frequency appropriateness
+  const idealFreq = {hypertrophy:[3,5],strength:[3,4],endurance:[3,5],power:[3,4],general:[3,4],fat_loss:[3,5]}[goal];
+  let freqScore = freq>=idealFreq[0]&&freq<=idealFreq[1]?100:Math.max(50,100-Math.abs(freq-idealFreq[0])*10);
+
+  const scores = [
+    {label:'Volume',val:Math.round(volumeScore),desc:`${totalSets} total sets (target: ${minSets}-${maxSets})`},
+    {label:'Rep Range',val:Math.round(repScore),desc:`Avg ${avgReps.toFixed(1)} reps (target: ${minReps}-${maxReps})`},
+    {label:'Ex. Count',val:Math.round(exCountScore),desc:`${exCount} exercises (ideal: ${idealEx[0]}-${idealEx[1]})`},
+    {label:'Push/Pull Ratio',val:Math.round(balanceScore),desc:`${Math.round(actualRatio*100)}% compound (ideal: ${Math.round(idealRatio*100)}%)`},
+    {label:'Coverage',val:Math.round(coverageScore),desc:`${groups.join(', ')}`},
+    {label:'Effort',val:Math.round(effortScore),desc:`${avgSetsPerEx.toFixed(1)} avg sets/exercise`},
+    {label:'MEV Compliance',val:Math.round(mevScore),desc:`${mevViolations} group(s) below minimum volume`},
+    {label:'Intensity',val:Math.round(intensityScore),desc:`Avg RIR ${avgRIR.toFixed(1)} (ideal: ${idealRIR})`},
+    {label:'Frequency',val:Math.round(freqScore),desc:`${freq}x/week (ideal: ${idealFreq[0]}-${idealFreq[1]}x)`},
+  ];
+
+  const weights = [0.17,0.15,0.13,0.12,0.11,0.09,0.09,0.07,0.07];
+  const overall = Math.round(scores.reduce((a,s,i)=>a+s.val*weights[i],0));
+  const g = gradeFromScore(overall);
+
+  const muscleMap = {};
+  exList.forEach(e=>e.muscles.forEach(m=>{muscleMap[m]=(muscleMap[m]||0)+e.sets;}));
+  const maxM = Math.max(...Object.values(muscleMap));
+
+  const gradientForMuscle = (pct)=>{
+    if(pct>0.75) return 'var(--green)';
+    if(pct>0.4) return 'var(--amber)';
+    return 'var(--blue)';
+  };
+
+  const indicators = [
+    {icon:'⚡',title:'Volume Load',desc:`${totalVolume} total reps × sets across ${exCount} exercises. ${totalVolume>=200?'High training stimulus — ensure adequate recovery.':totalVolume>=100?'Moderate volume — solid foundation.':'Low stimulus — consider adding volume or intensity.'}`},
+    {icon:'🏗️',title:'Compound vs Isolation',desc:`${compounds} compound / ${isolations} isolation (${Math.round(actualRatio*100)}% compound). For ${goal.replace('_',' ')}, ideal ratio is ~${Math.round(idealRatio*100)}% compound. Compounds drive mass; isolations refine.`},
+    {icon:'🎯',title:'Rep Range Alignment',desc:`Average reps: ${avgReps.toFixed(1)}. Target range for ${goal.replace('_',' ')}: ${minReps}-${maxReps} reps. ${Math.abs(avgReps-goalRepsMid)<=2?'Well aligned with your goal.':'Adjust per-exercise rep targets to better match your training goal.'}`},
+    {icon:'💪',title:'Muscle Groups Hit',desc:`Training: ${groups.join(', ')}. ${groups.length===1?'Single-focus session — maximize volume for that group.':groups.length<=3?'Focused split — ideal for push/pull/legs structure.':'Multi-group — monitor recovery demands across sessions.'}`},
+    {icon:'⏱️',title:'Session Time Fit',desc:`Estimated working time: ${exCount*8}-${exCount*12} min (excl. warmup/rest). ${exCount<=idealEx[1]?'Fits your '+duration+'-min session window.':'Exceeds '+duration+' min — trim '+( exCount-idealEx[1])+' exercise(s).'}`},
+    {icon:'📊',title:'Effort Distribution',desc:`${avgSetsPerEx.toFixed(1)} average sets per exercise. ${avgSetsPerEx>=3&&avgSetsPerEx<=4?'Optimal — enough sets per movement for growth signal.':avgSetsPerEx<3?'Low — 3-4 sets per movement is the hypertrophy sweet spot.':'High concentration — quality over quantity; fatigue accumulates.'}`},
+    {icon:'🔬',title:'MEV Compliance',desc:`Minimum Effective Volume: ${mevViolations===0?'✓ All muscle groups meet minimum effective volume threshold.':mevViolations+' group(s) below MEV. Add at least 1 set to each underfed group.'}`},
+    {icon:'🎚️',title:'Intensity (RIR)',desc:`Average RIR ${avgRIR.toFixed(1)} (Reps In Reserve). For ${goal.replace('_',' ')}, target RIR ${idealRIR}. ${Math.abs(avgRIR-idealRIR)<=0.5?'Intensity well matched.':'Adjust proximity to failure to optimize stimulus.'}`},
+    {icon:'🔄',title:'Recovery Demand',desc:`${compounds} compound lifts = high CNS load. ${compounds>=5?'High demand — ensure 48-72hr before training same groups. Watch for systemic fatigue.':compounds<=2?'Low CNS stress — can be trained more frequently.':'Moderate load — 48hr minimum between same muscle groups.'}`},
+    {icon:'📅',title:'Weekly Frequency',desc:`Training ${freq}x/week. For ${goal.replace('_',' ')}, optimal is ${idealFreq[0]}-${idealFreq[1]}x/week. ${freqScore>=85?'Frequency is optimal for your goal.':'Adjust your weekly schedule to hit this range for better long-term progress.'}`},
+  ];
+
+  const tips = [];
+  if(totalSets<minSets) tips.push(`Only ${totalSets} total sets — for ${goal.replace('_',' ')}, target ${minSets}-${maxSets} sets per session.`);
+  if(totalSets>maxSets) tips.push(`${totalSets} sets risks junk volume. Split into two sessions or trim lower-priority exercises.`);
+  if(avgReps<minReps-2) tips.push(`Reps average (${Math.round(avgReps)}) too low for ${goal.replace('_',' ')}. Adjust to ${minReps}-${maxReps} rep range.`);
+  if(avgReps>maxReps+2) tips.push(`Reps average (${Math.round(avgReps)}) too high for ${goal.replace('_',' ')}. Reduce reps for more strength-specific signal.`);
+  if(compounds===0) tips.push('Add at least one compound movement. They provide the primary anabolic stimulus.');
+  if(isolations===0&&goal==='hypertrophy') tips.push('Hypertrophy benefits from isolation exercises — target muscles at stretch position for maximum stimulus.');
+  if(exCount>idealEx[1]) tips.push(`${exCount} exercises exceeds ${duration}-min window. Remove ${exCount-idealEx[1]} exercise(s) and add volume to remaining movements instead.`);
+  if(mevViolations>0) tips.push('Some muscle groups are below MEV — add sets to those groups or their session may not drive adaptation.');
+  if(groups.includes('Chest')&&!groups.includes('Back')) tips.push('Chest training without back work can lead to postural imbalances over time. Consider adding a pull movement.');
+  if(goal==='hypertrophy') tips.push('Maximize time under tension — 2-3 sec eccentric tempo. Stretch position is where most hypertrophy signal comes from.');
+  if(goal==='strength') tips.push('Prioritize compound lifts with 72-96hr recovery. Keep assistance work minimal so CNS is fresh for main lifts.');
+  if(goal==='fat_loss') tips.push('Circuit or superset format increases metabolic demand without sacrificing muscle stimulus — consider pairing agonist/antagonist muscles.');
+  tips.push('Log every session. Progressive overload (adding reps, sets, or weight each week) is the #1 driver of long-term results.');
+  tips.push('Warm up properly — 2 feeder sets per main compound movement before working sets reduces injury risk significantly.');
+
+  document.getElementById('grade-empty').style.display='none';
+  document.getElementById('grade-content').style.display='block';
+  document.getElementById('grade-content').innerHTML = `
+    <div class="grade-panel">
+      <div class="grade-hero">
+        <div class="grade-letter" style="color:${g.color}">${g.letter}</div>
+        <div class="grade-info" style="flex:1">
+          <h2>${document.getElementById('wname').value||'Workout'} — ${g.label}</h2>
+          <p>${exCount} exercises · ${totalSets} total sets · ${totalVolume} total reps volume</p>
+          <p style="margin-top:2px">${groups.join(', ')}</p>
+          <div class="overall-score-wrap">
+            <div class="overall-score-num" style="color:${g.color}">${overall}</div>
+            <div class="overall-bar-wrap"><div class="overall-bar-fill" style="width:${overall}%;background:${g.color}"></div></div>
+            <div style="font-size:11px;color:var(--text3);font-family:var(--font-mono)">/100</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-head" style="margin-top:0">Score Breakdown</div>
+      <div class="score-bars">
+        ${scores.map(s=>`
+          <div class="score-bar-item">
+            <div class="score-bar-label">${s.label}</div>
+            <div class="score-bar-val" style="color:${barColor(s.val)}">${s.val}<span style="font-size:12px;color:var(--text3)">/100</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:${s.val}%;background:${barColor(s.val)}"></div></div>
+            <div style="font-size:10px;color:var(--text3);margin-top:5px;font-family:var(--font-mono)">${s.desc}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="section-head">Muscle Volume Map</div>
+      <div class="muscle-map">
+        ${Object.entries(muscleMap).sort((a,b)=>b[1]-a[1]).map(([m,s])=>{
+          const pct = s/maxM;
+          return `<div class="muscle-row">
+            <div class="muscle-name">${m}</div>
+            <div class="muscle-bar-wrap"><div class="muscle-bar-fill" style="width:${Math.round(pct*100)}%;background:${gradientForMuscle(pct)}"></div></div>
+            <div class="muscle-count">${s}s</div>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <div class="section-head">Performance Indicators</div>
+      <div class="indicators">
+        ${indicators.map(i=>`
+          <div class="indicator">
+            <div class="ind-icon">${i.icon}</div>
+            <div>
+              <div class="ind-title">${i.title}</div>
+              <div class="ind-desc">${i.desc}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="section-head">Optimization Tips</div>
+      <ul class="tips-list">${tips.map(t=>`<li>${t}</li>`).join('')}</ul>
+    </div>
+  `;
+
+  switchTab('grade',2);
+  document.querySelector('.app').scrollIntoView({behavior:'smooth'});
+}
+
+renderBuildExercises();
+renderLibrary();
+</script>
+</body>
+</html>
