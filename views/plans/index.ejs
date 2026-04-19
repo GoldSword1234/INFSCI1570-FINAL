@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <h1><%= title %></h1>
+  <p><a href="/dashboard">Back to Dashboard</a> | <a href="/">Build Plan</a></p>
+  <% if (plans.length === 0) { %>
+    <p>No plans yet.</p>
+  <% } else { %>
+    <table>
+      <thead><tr><th>Name</th><th>Goal</th><th>Level</th><th>Days</th><th></th></tr></thead>
+      <tbody>
+        <% plans.forEach(plan => { %>
+          <tr>
+            <td><a href="/plans/<%= plan._id %>"><%= plan.name %></a></td>
+            <td><%= plan.goal || '-' %></td>
+            <td><%= plan.level %></td>
+            <td><%= plan.daysPerWeek %></td>
+            <td>
+              <form action="/plans/<%= plan._id %>/delete" method="post" class="inline-form">
+                <button type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</body>
+</html>

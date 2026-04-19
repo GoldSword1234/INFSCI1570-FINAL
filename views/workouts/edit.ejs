@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <h1><%= title %></h1>
+  <p><a href="/workouts/<%= workout._id %>">Back to workout</a></p>
+  <form method="post" action="/workouts/<%= workout._id %>/update">
+    <label>Name<input name="name" value="<%= workout.name %>" required></label>
+    <label>Goal<input name="goal" value="<%= workout.goal %>"></label>
+    <label>Duration<input name="duration" type="number" min="0" value="<%= workout.duration %>"></label>
+    <label>Notes<textarea name="notes" rows="4"><%= workout.notes %></textarea></label>
+    <button type="submit">Update Workout</button>
+  </form>
+</body>
+</html>

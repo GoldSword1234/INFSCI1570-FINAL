@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <h1><%= workout.name %></h1>
+  <p><a href="/workouts">Back to workouts</a></p>
+  <p><strong>Goal:</strong> <%= workout.goal || '–' %></p>
+  <p><strong>Duration:</strong> <%= workout.duration %> minutes</p>
+  <p><strong>Notes:</strong> <%= workout.notes || 'None' %></p>
+  <% if (workout.exercises.length) { %>
+    <h2>Exercises</h2>
+    <table>
+      <thead><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th></tr></thead>
+      <tbody>
+        <% workout.exercises.forEach(item => { %>
+          <tr>
+            <td><%= item.exercise?.name || 'Unknown' %></td>
+            <td><%= item.sets %></td>
+            <td><%= item.reps %></td>
+            <td><%= item.weightLbs %> lbs</td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+  <p><a href="/workouts/<%= workout._id %>/edit">Edit workout</a></p>
+</body>
+</html>

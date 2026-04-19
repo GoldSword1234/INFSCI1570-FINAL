@@ -1,5 +1,6 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
+const { buildMongoUri } = require('./db');
 const Exercise = require('./models/Exercise');
 const User = require('./models/User');
 const Workout = require('./models/Workout');
@@ -56,7 +57,7 @@ const exercises = [
 
 async function seed() {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(buildMongoUri());
     console.log('✅ Connected to MongoDB');
 
     // Clear existing

@@ -1,13 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const path = require('path');
+const { buildMongoUri } = require('./db');
+
 require('dotenv').config();
 
 const app = express();
 
 // ─── Connect to MongoDB ───────────────────────────────────────────────────────
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(buildMongoUri())
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB error:', err));
 
@@ -24,7 +27,14 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'fittrack-secret',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 1000 * 60 * 60 * 24 } // 24 hours
+  store: MongoStore.create({
+    mongoUrl: buildMongoUri(),
+    ttl: 24 * 60 * 60 // 24 hours
+  }),
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24, // 24 hours
+    sameSite: 'lax'
+  }
 }));
 
 // Make user available in all views

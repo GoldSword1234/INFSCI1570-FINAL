@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <h1><%= title %></h1>
+  <p><a href="/workouts">Back to workouts</a></p>
+  <form method="post" action="/workouts">
+    <label>Name<input name="name" required></label>
+    <label>Goal<input name="goal"></label>
+    <label>Duration (minutes)<input name="duration" type="number" min="0"></label>
+    <label>Notes<textarea name="notes" rows="4"></textarea></label>
+    <button type="submit">Save Workout</button>
+  </form>
+</body>
+</html>

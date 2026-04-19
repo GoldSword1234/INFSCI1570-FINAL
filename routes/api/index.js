@@ -74,22 +74,8 @@ router.delete('/exercises/:id', async (req, res) => {
 // GET /api/workouts
 router.get('/workouts', async (req, res) => {
   try {
-    const workouts = await Workout.find({ user: req.apiUser._id })
-      .populate('exercises.exercise')
-      .sort({ date: -1 });
+    const workouts = await Workout.find({ user: req.user._id }).populate('exercises.exercise').sort({ date: -1 });
     res.json({ success: true, count: workouts.length, data: workouts });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// GET /api/workouts/:id
-router.get('/workouts/:id', async (req, res) => {
-  try {
-    const workout = await Workout.findOne({ _id: req.params.id, user: req.apiUser._id })
-      .populate('exercises.exercise');
-    if (!workout) return res.status(404).json({ success: false, error: 'Workout not found' });
-    res.json({ success: true, data: workout });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -98,37 +84,11 @@ router.get('/workouts/:id', async (req, res) => {
 // POST /api/workouts
 router.post('/workouts', async (req, res) => {
   try {
-    const workout = new Workout({ ...req.body, user: req.apiUser._id });
+    const workout = new Workout({ ...req.body, user: req.user._id });
     await workout.save();
     res.status(201).json({ success: true, data: workout });
   } catch (err) {
     res.status(400).json({ success: false, error: err.message });
-  }
-});
-
-// PUT /api/workouts/:id
-router.put('/workouts/:id', async (req, res) => {
-  try {
-    const workout = await Workout.findOneAndUpdate(
-      { _id: req.params.id, user: req.apiUser._id },
-      req.body,
-      { new: true, runValidators: true }
-    );
-    if (!workout) return res.status(404).json({ success: false, error: 'Workout not found' });
-    res.json({ success: true, data: workout });
-  } catch (err) {
-    res.status(400).json({ success: false, error: err.message });
-  }
-});
-
-// DELETE /api/workouts/:id
-router.delete('/workouts/:id', async (req, res) => {
-  try {
-    const workout = await Workout.findOneAndDelete({ _id: req.params.id, user: req.apiUser._id });
-    if (!workout) return res.status(404).json({ success: false, error: 'Workout not found' });
-    res.json({ success: true, message: 'Workout deleted' });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
   }
 });
 
@@ -137,19 +97,8 @@ router.delete('/workouts/:id', async (req, res) => {
 // GET /api/plans
 router.get('/plans', async (req, res) => {
   try {
-    const plans = await Plan.find({ user: req.apiUser._id }).sort({ createdAt: -1 });
+    const plans = await Plan.find({ user: req.user._id }).sort({ createdAt: -1 });
     res.json({ success: true, count: plans.length, data: plans });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// GET /api/plans/:id
-router.get('/plans/:id', async (req, res) => {
-  try {
-    const plan = await Plan.findOne({ _id: req.params.id, user: req.apiUser._id });
-    if (!plan) return res.status(404).json({ success: false, error: 'Plan not found' });
-    res.json({ success: true, data: plan });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -158,37 +107,11 @@ router.get('/plans/:id', async (req, res) => {
 // POST /api/plans
 router.post('/plans', async (req, res) => {
   try {
-    const plan = new Plan({ ...req.body, user: req.apiUser._id });
+    const plan = new Plan({ ...req.body, user: req.user._id });
     await plan.save();
     res.status(201).json({ success: true, data: plan });
   } catch (err) {
     res.status(400).json({ success: false, error: err.message });
-  }
-});
-
-// PUT /api/plans/:id
-router.put('/plans/:id', async (req, res) => {
-  try {
-    const plan = await Plan.findOneAndUpdate(
-      { _id: req.params.id, user: req.apiUser._id },
-      req.body,
-      { new: true, runValidators: true }
-    );
-    if (!plan) return res.status(404).json({ success: false, error: 'Plan not found' });
-    res.json({ success: true, data: plan });
-  } catch (err) {
-    res.status(400).json({ success: false, error: err.message });
-  }
-});
-
-// DELETE /api/plans/:id
-router.delete('/plans/:id', async (req, res) => {
-  try {
-    const plan = await Plan.findOneAndDelete({ _id: req.params.id, user: req.apiUser._id });
-    if (!plan) return res.status(404).json({ success: false, error: 'Plan not found' });
-    res.json({ success: true, message: 'Plan deleted' });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
   }
 });
 
