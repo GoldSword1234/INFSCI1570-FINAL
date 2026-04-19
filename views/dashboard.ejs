@@ -7,16 +7,25 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <h1>Dashboard</h1>
-  <p>Welcome, <strong><%= user.username %></strong>!</p>
-  <nav>
-    <a href="/workouts">My Workouts</a>
-    <a href="/plans">My Plans</a>
-    <a href="/exercises">Exercise Library</a>
-    <% if (user.role === 'admin') { %>
-      <a href="/admin">Admin</a>
-    <% } %>
-  </nav>
-  <p><a href="/auth/logout">Logout</a></p>
+  <div class="container">
+    <div class="header-row">
+      <h1><%= title %></h1>
+      <div class="header-actions">
+        <a href="/auth/logout" class="auth-button">Logout</a>
+      </div>
+    </div>
+    <p>Welcome back, <strong><%= user.username %></strong>!</p>
+    <section>
+      <h2>Quick Actions</h2>
+      <div class="nav-links">
+        <a href="/workouts">My Workouts</a>
+        <a href="/plans">My Plans</a>
+        <a href="/exercises">Exercise Library</a>
+        <% if (user.role === 'admin') { %>
+          <a href="/admin">Admin Panel</a>
+        <% } %>
+      </div>
+    </section>
+  </div>
 </body>
 </html>

@@ -7,15 +7,23 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <h1>Login</h1>
-  <% if (error) { %>
-    <p class="error-text"><%= error %></p>
-  <% } %>
-  <form method="post" action="/auth/login">
-    <label>Username<input name="username" required></label>
-    <label>Password<input name="password" type="password" required></label>
-    <button type="submit">Login</button>
-  </form>
-  <p><a href="/auth/signup">Create an account</a></p>
+  <div class="container">
+    <h1>Login</h1>
+    <% if (error) { %>
+      <p class="error-text"><%= error %></p>
+    <% } %>
+    <form method="post" action="/auth/login">
+      <div class="field">
+        <label>Username</label>
+        <input name="username" required>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input name="password" type="password" required>
+      </div>
+      <button type="submit">Login</button>
+    </form>
+    <p><a href="/auth/signup">Create an account</a></p>
+  </div>
 </body>
 </html>

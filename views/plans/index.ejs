@@ -7,29 +7,38 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <h1><%= title %></h1>
-  <p><a href="/dashboard">Back to Dashboard</a> | <a href="/">Build Plan</a></p>
-  <% if (plans.length === 0) { %>
-    <p>No plans yet.</p>
-  <% } else { %>
-    <table>
-      <thead><tr><th>Name</th><th>Goal</th><th>Level</th><th>Days</th><th></th></tr></thead>
-      <tbody>
-        <% plans.forEach(plan => { %>
-          <tr>
-            <td><a href="/plans/<%= plan._id %>"><%= plan.name %></a></td>
-            <td><%= plan.goal || '-' %></td>
-            <td><%= plan.level %></td>
-            <td><%= plan.daysPerWeek %></td>
-            <td>
-              <form action="/plans/<%= plan._id %>/delete" method="post" class="inline-form">
-                <button type="submit">Delete</button>
-              </form>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  <% } %>
+  <div class="container">
+    <div class="header-row">
+      <h1><%= title %></h1>
+      <div class="header-actions">
+        <a href="/dashboard" class="auth-button">Back to Dashboard</a>
+      </div>
+    </div>
+    <div class="actions">
+      <a href="/">Build Plan</a>
+    </div>
+    <% if (plans.length === 0) { %>
+      <p>No plans yet.</p>
+    <% } else { %>
+      <table>
+        <thead><tr><th>Name</th><th>Goal</th><th>Level</th><th>Days</th><th></th></tr></thead>
+        <tbody>
+          <% plans.forEach(plan => { %>
+            <tr>
+              <td><a href="/plans/<%= plan._id %>"><%= plan.name %></a></td>
+              <td><%= plan.goal || '-' %></td>
+              <td><%= plan.level %></td>
+              <td><%= plan.daysPerWeek %></td>
+              <td>
+                <form action="/plans/<%= plan._id %>/delete" method="post" class="inline-form">
+                  <button type="submit">Delete</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
 </body>
 </html>
