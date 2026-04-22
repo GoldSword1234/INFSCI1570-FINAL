@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header-row">
+      <h1><%= title %></h1>
+      <div class="header-actions">
+        <a href="/dashboard" class="auth-button">Back to Dashboard</a>
+      </div>
+    </div>
+    <div class="actions">
+      <a href="/workouts/new">Log Workout</a>
+    </div>
+    <% if (workouts.length === 0) { %>
+      <p>No workouts logged yet.</p>
+    <% } else { %>
+      <table>
+        <thead><tr><th>Date</th><th>Name</th><th>Goal</th><th>Duration</th><th></th></tr></thead>
+        <tbody>
+          <% workouts.forEach(workout => { %>
+            <tr>
+              <td><%= workout.date.toDateString() %></td>
+              <td><a href="/workouts/<%= workout._id %>"><%= workout.name %></a></td>
+              <td><%= workout.goal || '-' %></td>
+              <td><%= workout.duration %> min</td>
+              <td><a href="/workouts/<%= workout._id %>/edit">Edit</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</body>
+</html>

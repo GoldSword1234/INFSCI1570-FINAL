@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header-row">
+      <h1><%= title %></h1>
+      <div class="header-actions">
+        <a href="/auth/logout" class="auth-button">Logout</a>
+      </div>
+    </div>
+    <p>Welcome back, <strong><%= user.username %></strong>!</p>
+    <section>
+      <h2>Quick Actions</h2>
+      <div class="nav-links">
+        <a href="/workouts">My Workouts</a>
+        <a href="/plans">My Plans</a>
+        <a href="/exercises">Exercise Library</a>
+        <% if (user.role === 'admin') { %>
+          <a href="/admin">Admin Panel</a>
+        <% } %>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

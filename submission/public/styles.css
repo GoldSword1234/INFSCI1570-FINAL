@@ -1,0 +1,273 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1c1c26;
+  --surface3: #252530;
+  --border: #2a2a38;
+  --border2: #353545;
+  --text: #f0f0f8;
+  --text2: #9898b0;
+  --text3: #5a5a72;
+  --green: #00ff88;
+  --green2: #00cc6a;
+  --green-dim: #003322;
+  --amber: #ffaa00;
+  --amber-dim: #332200;
+  --red: #ff4455;
+  --red-dim: #330011;
+  --blue: #4488ff;
+  --purple: #aa44ff;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body, input, select, textarea, button {
+  font-family: var(--font-body);
+}
+
+a {
+  color: var(--green);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-head);
+  color: var(--text);
+  margin: 0 0 1rem;
+}
+
+h1 {
+  font-size: 2rem;
+  letter-spacing: -1px;
+}
+
+h2 {
+  font-size: 1.35rem;
+  margin-top: 2rem;
+}
+
+h3 {
+  font-size: 1.1rem;
+}
+
+p {
+  margin: 0 0 1rem;
+}
+
+button, .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1.25rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: var(--green);
+  color: #000;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+button:hover, .btn:hover {
+  background: var(--green2);
+  transform: translateY(-1px);
+}
+
+button:disabled,
+button[disabled] {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+input, select, textarea {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+  color: var(--text);
+  font-size: 0.95rem;
+  outline: none;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.07);
+}
+
+label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.5rem;
+}
+
+.field {
+  margin-bottom: 1rem;
+}
+
+textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.nav-links,
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.auth-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.auth-button:hover {
+  background: var(--surface2);
+  border-color: var(--border2);
+}
+
+.auth-button.primary {
+  background: var(--green);
+  color: #000;
+}
+
+.nav-links a,
+.actions a,
+.actions button {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+}
+
+.nav-links a:hover,
+.actions a:hover,
+.actions button:hover {
+  background: var(--surface2);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+
+th, td {
+  padding: 0.85rem 0.9rem;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+th {
+  background: var(--surface2);
+  font-weight: 700;
+}
+
+tr:nth-child(even) {
+  background: var(--surface);
+}
+
+section {
+  margin-bottom: 1.5rem;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+}
+
+li {
+  margin-bottom: 0.8rem;
+}
+
+.message {
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  background: rgba(0, 255, 136, 0.08);
+  border: 1px solid rgba(0, 255, 136, 0.15);
+  color: var(--text);
+}
+
+.error-text,
+.error {
+  color: var(--red);
+}
+
+.inline-form {
+  display: inline;
+}
+
+footer {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  color: var(--text3);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 700px) {
+  .nav-links, .actions {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header-row">
+      <h1><%= title %></h1>
+      <div class="header-actions">
+        <a href="/plans" class="auth-button">Back to plans</a>
+      </div>
+    </div>
+    <form method="post" action="/plans">
+      <div class="field">
+        <label>Name</label>
+        <input name="name" required>
+      </div>
+      <div class="field">
+        <label>Goal</label>
+        <input name="goal">
+      </div>
+      <div class="field">
+        <label>Level</label>
+        <select name="level">
+          <option value="beginner">Beginner</option>
+          <option value="intermediate" selected>Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Days per week</label>
+        <input name="daysPerWeek" type="number" min="1" max="7" value="3">
+      </div>
+      <div class="field">
+        <label>Notes</label>
+        <textarea name="notes" rows="4"></textarea>
+      </div>
+      <button type="submit">Create Plan</button>
+    </form>
+  </div>
+</body>
+</html>

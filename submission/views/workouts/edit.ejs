@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header-row">
+      <h1><%= title %></h1>
+      <div class="header-actions">
+        <a href="/workouts/<%= workout._id %>" class="auth-button">Back to workout</a>
+      </div>
+    </div>
+    <form method="post" action="/workouts/<%= workout._id %>/update">
+      <div class="field">
+        <label>Name</label>
+        <input name="name" value="<%= workout.name %>" required>
+      </div>
+      <div class="field">
+        <label>Goal</label>
+        <input name="goal" value="<%= workout.goal %>">
+      </div>
+      <div class="field">
+        <label>Duration</label>
+        <input name="duration" type="number" min="0" value="<%= workout.duration %>">
+      </div>
+      <div class="field">
+        <label>Notes</label>
+        <textarea name="notes" rows="4"><%= workout.notes %></textarea>
+      </div>
+      <button type="submit">Update Workout</button>
+    </form>
+  </div>
+</body>
+</html>
